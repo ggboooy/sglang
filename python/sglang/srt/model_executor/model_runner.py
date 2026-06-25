@@ -253,6 +253,7 @@ class ModelRunner:
         self.dcp_size = server_args.dcp_size
         self.dcp_rank = ps.tp_rank % self.dcp_size
         self.ps = ps
+        self.init_parallel_field_aliases()
         self.model_config = model_config
         self.dist_port = nccl_port
         self.server_args = server_args
@@ -371,53 +372,19 @@ class ModelRunner:
         self.init_weight_updater()
         self.init_weight_exporter()
 
-    @property
-    def tp_rank(self) -> int:
-        return self.ps.tp_rank
-
-    @property
-    def tp_size(self) -> int:
-        return self.ps.tp_size
-
-    @property
-    def pp_rank(self) -> int:
-        return self.ps.pp_rank
-
-    @property
-    def pp_size(self) -> int:
-        return self.ps.pp_size
-
-    @property
-    def dp_rank(self) -> Optional[int]:
-        return self.ps.dp_rank
-
-    @property
-    def dp_size(self) -> int:
-        return self.ps.attn_dp_size
-
-    @property
-    def moe_ep_rank(self) -> int:
-        return self.ps.moe_ep_rank
-
-    @property
-    def moe_ep_size(self) -> int:
-        return self.ps.moe_ep_size
-
-    @property
-    def moe_dp_rank(self) -> Optional[int]:
-        return self.ps.moe_dp_rank
-
-    @property
-    def moe_dp_size(self) -> int:
-        return self.ps.moe_dp_size
-
-    @property
-    def attn_cp_rank(self) -> int:
-        return self.ps.attn_cp_rank
-
-    @property
-    def attn_cp_size(self) -> int:
-        return self.ps.attn_cp_size
+    def init_parallel_field_aliases(self):
+        self.tp_rank = self.ps.tp_rank
+        self.tp_size = self.ps.tp_size
+        self.pp_rank = self.ps.pp_rank
+        self.pp_size = self.ps.pp_size
+        self.dp_rank = self.ps.dp_rank
+        self.dp_size = self.ps.attn_dp_size
+        self.moe_ep_rank = self.ps.moe_ep_rank
+        self.moe_ep_size = self.ps.moe_ep_size
+        self.moe_dp_rank = self.ps.moe_dp_rank
+        self.moe_dp_size = self.ps.moe_dp_size
+        self.attn_cp_rank = self.ps.attn_cp_rank
+        self.attn_cp_size = self.ps.attn_cp_size
 
     def init_msprobe(self):
         self.msprobe_debugger = misc_utils.create_msprobe_debugger(self.server_args)
